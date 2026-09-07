@@ -1,8 +1,16 @@
-import { useFonts } from 'expo-font';
+import 'react-native-gesture-handler';
+import {
+  useFonts,
+  PlusJakartaSans_400Regular,
+  PlusJakartaSans_500Medium,
+  PlusJakartaSans_600SemiBold,
+  PlusJakartaSans_700Bold,
+} from '@expo-google-fonts/plus-jakarta-sans';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 // Core routing layout
 export {
@@ -20,7 +28,10 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+    PlusJakartaSans_400Regular,
+    PlusJakartaSans_500Medium,
+    PlusJakartaSans_600SemiBold,
+    PlusJakartaSans_700Bold,
   });
 
   // Expo Router uses Error Boundaries to catch errors in the navigation tree.
@@ -43,11 +54,13 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
   return (
-    <Stack>
-      <Stack.Screen name="index" options={{ headerShown: false }} />
-      <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-      <Stack.Screen name="(customer)" options={{ headerShown: false }} />
-      <Stack.Screen name="(provider)" options={{ headerShown: false }} />
-    </Stack>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <Stack>
+        <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+        <Stack.Screen name="(customer)" options={{ headerShown: false }} />
+        <Stack.Screen name="(provider)" options={{ headerShown: false }} />
+      </Stack>
+    </GestureHandlerRootView>
   );
 }

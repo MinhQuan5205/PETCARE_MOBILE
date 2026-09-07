@@ -1,6 +1,7 @@
 import React from 'react';
-import { HomeScreen } from '@/features/home';
+import { DesignSystemPreview } from '@/core/theme/DesignSystemPreview';
 
-export default function CustomerIndexRoute() {
-  return <HomeScreen />;
+export default function IndexScreen() {
+  // TEMPORARY: Render Design System Preview for visual QA.
+  return <DesignSystemPreview />;
 }
