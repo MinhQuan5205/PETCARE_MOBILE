@@ -52,15 +52,44 @@ export default function RootLayout() {
   return <RootLayoutNav />;
 }
 
+import { AuthProvider, useAuth } from '../src/features/auth/context/AuthContext';
+import { useRouter, useSegments } from 'expo-router';
+
 function RootLayoutNav() {
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <Stack>
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-        <Stack.Screen name="(customer)" options={{ headerShown: false }} />
-        <Stack.Screen name="(provider)" options={{ headerShown: false }} />
-      </Stack>
-    </GestureHandlerRootView>
+    <AuthProvider>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <MainLayout />
+      </GestureHandlerRootView>
+    </AuthProvider>
+  );
+}
+
+function MainLayout() {
+  const { isAuthenticated, isLoading } = useAuth();
+  const segments = useSegments();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (isLoading) return;
+
+    const inAuthGroup = segments[0] === '(auth)';
+    
+    if (!isAuthenticated && !inAuthGroup) {
+      // Redirect to login
+      router.replace('/(auth)/login');
+    } else if (isAuthenticated && inAuthGroup) {
+      // Redirect to app
+      router.replace('/(customer)/home');
+    }
+  }, [isAuthenticated, isLoading, segments, router]);
+
+  return (
+    <Stack>
+      <Stack.Screen name="index" options={{ headerShown: false }} />
+      <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+      <Stack.Screen name="(customer)" options={{ headerShown: false }} />
+      <Stack.Screen name="(provider)" options={{ headerShown: false }} />
+    </Stack>
   );
 }
