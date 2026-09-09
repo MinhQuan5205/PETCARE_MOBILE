@@ -10,6 +10,7 @@ import {
   ResetPasswordRequest,
   ChangePasswordRequest,
   GoogleLoginRequest,
+  ForgotPasswordRequest,
 } from '../types/auth.types';
 
 export const authApi = {
@@ -45,6 +46,11 @@ export const authApi = {
 
   resetPassword: async (data: ResetPasswordRequest): Promise<ApiResponse<null>> => {
     const response = await apiClient.post('/auth/reset-password', data);
+    return response.data;
+  },
+
+  forgotPassword: async (data: ForgotPasswordRequest): Promise<ApiResponse<null>> => {
+    const response = await apiClient.post('/auth/forgot-password', data);
     return response.data;
   },
 

@@ -1,14 +1,14 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, KeyboardAvoidingView, ScrollView, Platform } from 'react-native';
 import { Button } from '../../../core/components/Button';
 import { Input } from '../../../core/components/Input';
 import { Screen } from '../../../core/components/Screen';
 import { colors } from '../../../core/theme/colors';
 import { spacing } from '../../../core/theme/spacing';
 import { typography } from '../../../core/theme/typography';
-// Assume we have an endpoint for forgot password although API client doesn't export it yet, it exists in contract
-import { apiClient } from '../../../infrastructure/api/client';
+import { authApi } from '../api/authApi';
+import { Icon } from '../../../core/components/Icon';
 
 export default function ForgotPasswordScreen() {
   const [email, setEmail] = useState('');
@@ -19,7 +19,7 @@ export default function ForgotPasswordScreen() {
 
   const handleReset = async () => {
     if (!email) {
-      setError('Vui lòng nhập email');
+      setError('Vui lòng nhập địa chỉ email');
       return;
     }
     
@@ -27,12 +27,15 @@ export default function ForgotPasswordScreen() {
     setError('');
     
     try {
-      // Direct call since not added to authApi yet
-      await apiClient.post('/auth/forgot-password', { email });
-      router.push({
-        pathname: '/(auth)/reset-password',
-        params: { email }
-      });
+      const res = await authApi.forgotPassword({ email });
+      if (res.success) {
+        router.push({
+          pathname: '/(auth)/reset-password',
+          params: { email }
+        });
+      } else {
+        setError(res.message || 'Yêu cầu thất bại');
+      }
     } catch (err: any) {
       setError(err?.message || 'Đã có lỗi xảy ra. Vui lòng thử lại.');
     } finally {
@@ -41,23 +44,49 @@ export default function ForgotPasswordScreen() {
   };
 
   return (
-    <Screen style={styles.container} >
-      <View style={styles.header}>
-        <Text style={[typography.h1, { color: colors.text.primary }]}>Quên mật khẩu</Text>
-        <Text style={[typography.bodyLg, { color: colors.text.secondary, marginTop: spacing[1] }]}>
-          Nhập email của bạn để nhận mã khôi phục mật khẩu
-        </Text>
-      </View>
+    <Screen style={styles.container}>
+      <KeyboardAvoidingView 
+        style={styles.keyboardView}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      >
+        <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+          
+          <TouchableOpacity 
+            style={styles.backButton}
+            onPress={() => router.back()}
+          >
+            <Icon name="arrow-left" size={24} color={colors.text.primary} />
+          </TouchableOpacity>
 
-      <View style={styles.form}>
-          <>
+          <View style={styles.iconContainer}>
+            <View style={styles.iconCircle}>
+              <Icon name="key" size={32} color={colors.secondary.active} />
+            </View>
+          </View>
+
+          <View style={styles.header}>
+            <Text style={[typography.h1, { color: colors.text.primary, textAlign: 'center' }]}>Quên mật khẩu?</Text>
+            <Text style={[typography.bodyLg, { color: colors.text.secondary, marginTop: spacing[2], textAlign: 'center' }]}>
+              Đừng lo lắng! Vui lòng nhập email của bạn, chúng tôi sẽ gửi mã khôi phục.
+            </Text>
+          </View>
+
+          <View style={styles.form}>
+            {error ? (
+              <View style={styles.errorBox}>
+                <Icon name="alert-circle" size={16} color={colors.semantic.error} />
+                <Text style={styles.errorText}>{error}</Text>
+              </View>
+            ) : null}
+
             <Input
               label="Email"
-              placeholder="Nhập email"
+              placeholder="Nhập email của bạn"
               value={email}
               onChangeText={setEmail}
               keyboardType="email-address"
-              error={error}
+              autoCapitalize="none"
+              leftIcon="mail"
             />
 
             <Button label="Gửi Yêu Cầu"
@@ -65,32 +94,64 @@ export default function ForgotPasswordScreen() {
               isLoading={loading}
               style={{ marginTop: spacing[4] }}
             />
-          </>
-      </View>
-      
-        <View style={styles.footer}>
-          <TouchableOpacity onPress={() => router.push('/(auth)/login')}>
-            <Text style={[typography.button, { color: colors.primary.default }]}>Quay lại đăng nhập</Text>
-          </TouchableOpacity>
-        </View>
+          </View>
+          
+        </ScrollView>
+      </KeyboardAvoidingView>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+  },
+  keyboardView: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
     padding: spacing[6],
+    paddingTop: spacing[12],
+  },
+  backButton: {
+    position: 'absolute',
+    top: spacing[2],
+    left: spacing[2],
+    zIndex: 10,
+    padding: spacing[2],
+  },
+  iconContainer: {
+    alignItems: 'center',
+    marginBottom: spacing[6],
+    marginTop: spacing[8],
+  },
+  iconCircle: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: colors.secondary.container,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   header: {
-    marginTop: spacing[10],
     marginBottom: spacing[8],
   },
   form: {
     gap: spacing[4],
   },
-  footer: {
+  errorBox: {
     flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: spacing[8],
+    alignItems: 'center',
+    backgroundColor: colors.semantic.errorContainer,
+    padding: spacing[3],
+    borderRadius: spacing[2],
+    marginBottom: spacing[2],
+  },
+  errorText: {
+    ...typography.bodySm,
+    color: colors.semantic.error,
+    marginLeft: spacing[2],
+    flex: 1,
   },
 });

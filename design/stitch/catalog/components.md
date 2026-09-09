@@ -217,7 +217,7 @@ The reusable component-library HTML contains examples of:
 - Search bar + tune/filter
 - All Pets segmented filter
 - Button matrix and floating actions
-- Primary Coral / Secondary Sage / Outline / Danger / Ghost controls
+- Primary Blue / Secondary Yellow / Outline / Danger / Ghost controls
 - Avatars and trust badges
 - Booking status chips
 - Pet showcase

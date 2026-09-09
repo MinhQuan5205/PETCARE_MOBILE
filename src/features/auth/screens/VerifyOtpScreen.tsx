@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, KeyboardAvoidingView, ScrollView, Platform } from 'react-native';
 import { Screen } from '../../../core/components/Screen';
 import { OTPInput } from '../../../core/components/OTPInput';
 import { Button } from '../../../core/components/Button';
@@ -9,6 +9,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { typography } from '../../../core/theme/typography';
 import { colors } from '../../../core/theme/colors';
 import { spacing } from '../../../core/theme/spacing';
+import { Icon } from '../../../core/components/Icon';
 
 export default function VerifyOtpScreen() {
   const [otp, setOtp] = useState('');
@@ -22,7 +23,7 @@ export default function VerifyOtpScreen() {
   const { login } = useAuth();
 
   useEffect(() => {
-    let timer: NodeJS.Timeout;
+    let timer: ReturnType<typeof setTimeout>;
     if (countdown > 0) {
       timer = setTimeout(() => setCountdown(countdown - 1), 1000);
     }
@@ -39,7 +40,7 @@ export default function VerifyOtpScreen() {
     setError('');
     
     try {
-      const res = await authApi.verifyOtp({ email, otp });
+      const res = await authApi.verifyOtp({ email: email as string, otp });
       if (res.success && res.data) {
         await login(res.data.accessToken, res.data.user);
       } else {
@@ -57,7 +58,7 @@ export default function VerifyOtpScreen() {
     setResendLoading(true);
     setError('');
     try {
-      const res = await authApi.resendOtp({ email });
+      const res = await authApi.resendOtp({ email: email as string });
       if (res.success) {
         setCountdown(60);
       } else {
@@ -71,62 +72,130 @@ export default function VerifyOtpScreen() {
   };
 
   return (
-    <Screen style={styles.container} >
-      <View style={styles.header}>
-        <Text style={[typography.h1, { color: colors.text.primary }]}>Xác thực OTP</Text>
-        <Text style={[typography.bodyLg, { color: colors.text.secondary, marginTop: spacing[1] }]}>
-          Mã xác thực đã được gửi đến {email}
-        </Text>
-      </View>
-
-      <View style={styles.form}>
-        <OTPInput
-          length={6}
-          value={otp}
-          onChange={setOtp}
-          error={error ? "Lỗi" : undefined}
-        />
-        {error ? <Text style={styles.errorText}>{error}</Text> : null}
-
-        <Button label="Xác Nhận"
-          onPress={handleVerify}
-          isLoading={loading}
-          style={{ marginTop: spacing[4], width: '100%' }}
-        />
-
-        <View style={styles.resendContainer}>
-          <Text style={[typography.bodyMd, { color: colors.text.secondary }]}>Chưa nhận được mã? </Text>
-          <TouchableOpacity onPress={handleResend} disabled={countdown > 0 || resendLoading}>
-            <Text style={[
-              typography.bodyMd, 
-              { color: countdown > 0 ? colors.text.secondary : colors.primary.default, fontWeight: 'bold' }
-            ]}>
-              {resendLoading ? 'Đang gửi...' : (countdown > 0 ? `Gửi lại sau ${countdown}s` : 'Gửi lại mã')}
-            </Text>
+    <Screen style={styles.container}>
+      <KeyboardAvoidingView 
+        style={styles.keyboardView}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      >
+        <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+          
+          <TouchableOpacity 
+            style={styles.backButton}
+            onPress={() => router.back()}
+          >
+            <Icon name="arrow-left" size={24} color={colors.text.primary} />
           </TouchableOpacity>
-        </View>
-      </View>
+
+          <View style={styles.iconContainer}>
+            <View style={styles.iconCircle}>
+              <Icon name="mail" size={32} color={colors.secondary.active} />
+            </View>
+          </View>
+
+          <View style={styles.header}>
+            <Text style={[typography.h1, { color: colors.text.primary, textAlign: 'center' }]}>Xác thực OTP</Text>
+            <Text style={[typography.bodyLg, { color: colors.text.secondary, marginTop: spacing[2], textAlign: 'center' }]}>
+              Mã xác thực đã được gửi đến{'\n'}
+              <Text style={{ color: colors.text.primary, fontWeight: '600' }}>{email}</Text>
+            </Text>
+          </View>
+
+          <View style={styles.form}>
+            {error ? (
+              <View style={styles.errorBox}>
+                <Icon name="alert-circle" size={16} color={colors.semantic.error} />
+                <Text style={styles.errorText}>{error}</Text>
+              </View>
+            ) : null}
+
+            <OTPInput
+              length={6}
+              value={otp}
+              onChange={setOtp}
+              error={error ? " " : undefined}
+            />
+
+            <Button label="Xác Nhận"
+              onPress={handleVerify}
+              isLoading={loading}
+              style={{ marginTop: spacing[4], width: '100%' }}
+            />
+
+            <View style={styles.resendContainer}>
+              <Text style={[typography.bodyMd, { color: colors.text.secondary }]}>Chưa nhận được mã? </Text>
+              <TouchableOpacity onPress={handleResend} disabled={countdown > 0 || resendLoading}>
+                <Text style={[
+                  typography.bodyMd, 
+                  { 
+                    color: countdown > 0 ? colors.text.muted : colors.primary.default, 
+                    fontWeight: 'bold' 
+                  }
+                ]}>
+                  {resendLoading ? 'Đang gửi...' : (countdown > 0 ? `Gửi lại sau ${countdown}s` : 'Gửi lại mã')}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+        </ScrollView>
+      </KeyboardAvoidingView>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+  },
+  keyboardView: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
     padding: spacing[6],
+    paddingTop: spacing[12],
+  },
+  backButton: {
+    position: 'absolute',
+    top: spacing[2],
+    left: spacing[2],
+    zIndex: 10,
+    padding: spacing[2],
+  },
+  iconContainer: {
+    alignItems: 'center',
+    marginBottom: spacing[6],
+    marginTop: spacing[8],
+  },
+  iconCircle: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: colors.secondary.container,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   header: {
-    marginTop: spacing[10],
     marginBottom: spacing[8],
   },
   form: {
     alignItems: 'center',
     gap: spacing[4],
   },
+  errorBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.semantic.errorContainer,
+    padding: spacing[3],
+    borderRadius: spacing[2],
+    marginBottom: spacing[2],
+    width: '100%',
+  },
   errorText: {
-    ...typography.caption,
+    ...typography.bodySm,
     color: colors.semantic.error,
-    alignSelf: 'flex-start',
-    marginTop: -spacing[2],
+    marginLeft: spacing[2],
+    flex: 1,
   },
   resendContainer: {
     flexDirection: 'row',

@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, KeyboardAvoidingView, ScrollView, Platform } from 'react-native';
 import { Button } from '../../../core/components/Button';
 import { Input } from '../../../core/components/Input';
 import { Screen } from '../../../core/components/Screen';
@@ -8,6 +8,7 @@ import { colors } from '../../../core/theme/colors';
 import { spacing } from '../../../core/theme/spacing';
 import { typography } from '../../../core/theme/typography';
 import { authApi } from '../api/authApi';
+import { Icon } from '../../../core/components/Icon';
 
 export default function ResetPasswordScreen() {
   const { email } = useLocalSearchParams<{ email: string }>();
@@ -53,93 +54,145 @@ export default function ResetPasswordScreen() {
 
   return (
     <Screen style={styles.container}>
-      <View style={styles.header}>
-        <Text style={[typography.h1, { color: colors.text.primary }]}>Đặt lại mật khẩu</Text>
-        <Text style={[typography.bodyLg, { color: colors.text.secondary, marginTop: spacing[1] }]}>
-          Mã xác thực đã được gửi đến {email}
-        </Text>
-      </View>
+      <KeyboardAvoidingView 
+        style={styles.keyboardView}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      >
+        <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+          
+          {!success && (
+            <TouchableOpacity 
+              style={styles.backButton}
+              onPress={() => router.back()}
+            >
+              <Icon name="arrow-left" size={24} color={colors.text.primary} />
+            </TouchableOpacity>
+          )}
 
-      <View style={styles.form}>
-        {!success ? (
-          <>
-            <Input
-              label="Mã OTP"
-              placeholder="Nhập mã OTP (6 số)"
-              value={otp}
-              onChangeText={setOtp}
-              keyboardType="number-pad"
-            />
-            
-            <Input
-              label="Mật khẩu mới"
-              placeholder="Nhập mật khẩu mới"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-            />
-
-            <Input
-              label="Xác nhận mật khẩu"
-              placeholder="Nhập lại mật khẩu mới"
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
-              secureTextEntry
-              error={error}
-            />
-
-            <Button label="Lưu Mật Khẩu"
-              onPress={handleReset}
-              isLoading={loading}
-              style={{ marginTop: spacing[4] }}
-            />
-          </>
-        ) : (
-          <View style={styles.successBox}>
-            <Text style={[typography.h3, { color: colors.semantic.success, marginBottom: spacing[2] }]}>Thành công!</Text>
-            <Text style={[typography.bodyMd, { textAlign: 'center', color: colors.text.secondary }]}>
-              Mật khẩu của bạn đã được đặt lại thành công.
-            </Text>
-            <Button label="Đăng nhập ngay"
-              onPress={() => router.push('/(auth)/login')}
-              style={{ marginTop: spacing[8], width: '100%' }}
-            />
+          <View style={styles.iconContainer}>
+            <View style={[styles.iconCircle, success && { backgroundColor: colors.semantic.successContainer }]}>
+              <Icon name={success ? "check-circle" : "shield-check"} size={32} color={success ? colors.semantic.success : colors.primary.default} />
+            </View>
           </View>
-        )}
-      </View>
-      
-      {!success && (
-        <View style={styles.footer}>
-          <TouchableOpacity onPress={() => router.push('/(auth)/login')}>
-            <Text style={[typography.button, { color: colors.primary.default }]}>Quay lại đăng nhập</Text>
-          </TouchableOpacity>
-        </View>
-      )}
+
+          <View style={styles.header}>
+            <Text style={[typography.h1, { color: colors.text.primary, textAlign: 'center' }]}>
+              {success ? "Thành công!" : "Đặt lại mật khẩu"}
+            </Text>
+            <Text style={[typography.bodyLg, { color: colors.text.secondary, marginTop: spacing[2], textAlign: 'center' }]}>
+              {success 
+                ? "Mật khẩu của bạn đã được đặt lại thành công."
+                : `Mã xác thực đã được gửi đến ${email || 'email của bạn'}`}
+            </Text>
+          </View>
+
+          <View style={styles.form}>
+            {!success ? (
+              <>
+                {error ? (
+                  <View style={styles.errorBox}>
+                    <Icon name="alert-circle" size={16} color={colors.semantic.error} />
+                    <Text style={styles.errorText}>{error}</Text>
+                  </View>
+                ) : null}
+
+                <Input
+                  label="Mã OTP"
+                  placeholder="Nhập mã OTP (6 số)"
+                  value={otp}
+                  onChangeText={setOtp}
+                  keyboardType="number-pad"
+                  leftIcon="hash"
+                />
+                
+                <Input
+                  label="Mật khẩu mới"
+                  placeholder="Nhập mật khẩu mới"
+                  value={password}
+                  onChangeText={setPassword}
+                  secureTextEntry
+                  leftIcon="lock"
+                />
+
+                <Input
+                  label="Xác nhận mật khẩu"
+                  placeholder="Nhập lại mật khẩu mới"
+                  value={confirmPassword}
+                  onChangeText={setConfirmPassword}
+                  secureTextEntry
+                  leftIcon="lock"
+                />
+
+                <Button label="Lưu Mật Khẩu"
+                  onPress={handleReset}
+                  isLoading={loading}
+                  style={{ marginTop: spacing[4] }}
+                />
+              </>
+            ) : (
+              <Button label="Đăng nhập ngay"
+                onPress={() => router.push('/(auth)/login')}
+                style={{ marginTop: spacing[4], width: '100%' }}
+              />
+            )}
+          </View>
+          
+        </ScrollView>
+      </KeyboardAvoidingView>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+  },
+  keyboardView: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
     padding: spacing[6],
+    paddingTop: spacing[12],
+  },
+  backButton: {
+    position: 'absolute',
+    top: spacing[2],
+    left: spacing[2],
+    zIndex: 10,
+    padding: spacing[2],
+  },
+  iconContainer: {
+    alignItems: 'center',
+    marginBottom: spacing[6],
+    marginTop: spacing[8],
+  },
+  iconCircle: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: colors.primary.container,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   header: {
-    marginTop: spacing[10],
     marginBottom: spacing[8],
   },
   form: {
     gap: spacing[4],
   },
-  successBox: {
-    alignItems: 'center',
-    padding: spacing[6],
-    backgroundColor: colors.semantic.successContainer,
-    borderRadius: spacing[4],
-    marginTop: spacing[8],
-  },
-  footer: {
+  errorBox: {
     flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: spacing[8],
+    alignItems: 'center',
+    backgroundColor: colors.semantic.errorContainer,
+    padding: spacing[3],
+    borderRadius: spacing[2],
+    marginBottom: spacing[2],
+  },
+  errorText: {
+    ...typography.bodySm,
+    color: colors.semantic.error,
+    marginLeft: spacing[2],
+    flex: 1,
   },
 });

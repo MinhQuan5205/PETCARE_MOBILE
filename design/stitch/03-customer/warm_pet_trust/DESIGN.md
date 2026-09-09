@@ -18,7 +18,7 @@ colors:
   surface-tint: '#ae3115'
   primary: '#ae3115'
   on-primary: '#ffffff'
-  primary-container: '#ff6b4a'
+  primary-container: '#2563EB'
   on-primary-container: '#661000'
   inverse-primary: '#ffb4a3'
   secondary: '#006c4d'
@@ -158,9 +158,9 @@ Drawing from a warm contemporary visual style, the interface relies on generous 
 
 The color palette is built upon a grounding foundation of warm neutrals complemented by nature-inspired chromatic accents. 
 
-- **Primary (`#FF6B4A`)**: A vibrant terracotta coral used for primary calls-to-action, key promotional highlights, and brand identity touchpoints. Supported by `#FFEAE4` for containers and `#D94827` for active/pressed states.
-- **Secondary (`#2D8A68`)**: A calming forest sage green signaling trust, verified statuses, health records, and successful outcomes. Paired with `#E6F5EF` for badge backgrounds and `#1E6148` for deep contrast text.
-- **Tertiary / Accent (`#F5A623`)**: A golden honey yellow designated for ratings, active booking progression, and cautionary warnings.
+- **Primary (`#2563EB`)**: A vibrant terracotta coral used for primary calls-to-action, key promotional highlights, and brand identity touchpoints. Supported by `#DBEAFE` for containers and `#1D4ED8` for active/pressed states.
+- **Secondary (`#16A34A`)**: A calming forest sage green signaling trust, verified statuses, health records, and successful outcomes. Paired with `#FEF3C7` for badge backgrounds and `#D99A16` for deep contrast text.
+- **Tertiary / Accent (`#F5B82E`)**: A golden honey yellow designated for ratings, active booking progression, and cautionary warnings.
 - **Neutrals**: Built on organic, warm undertones rather than cold grays to preserve intimacy:
   - Surface Default: `#FCFBF9` (Warm White)
   - Surface Subdued: `#F7F4EF` (Warm Cream)
@@ -170,10 +170,10 @@ The color palette is built upon a grounding foundation of warm neutrals compleme
   - Text Secondary: `#3A352F`
   - Text Primary: `#1A1613` (Dark Charcoal)
 - **Feedback Semantics**:
-  - Success: `#2D8A68` (Container: `#E6F5EF`)
-  - Warning: `#F5A623` (Container: `#FEF6E7`)
-  - Critical / Error: `#E53935` (Container: `#FDEBEB`)
-  - Info: `#2575FC` (Container: `#EBF3FF`)
+  - Success: `#16A34A` (Container: `#FEF3C7`)
+  - Warning: `#F5B82E` (Container: `#FEF3C7`)
+  - Critical / Error: `#DC2626` (Container: `#FEE2E2`)
+  - Info: `#2563EB` (Container: `#DBEAFE`)
 
 ## Typography
 
@@ -212,29 +212,29 @@ The shape system adopts a pill-shaped orientation (`roundedness: 3`). Soft, circ
 ## Components
 
 ### Buttons
-- **Primary Coral**: Solid `#FF6B4A` background, `#FFFFFF` text. Hover/Pressed: `#D94827`. Elevation Level 1. Full pill (`9999px`) or `16px` radius depending on form placement.
-- **Secondary Sage**: Solid `#2D8A68` background, `#FFFFFF` text. Hover/Pressed: `#1E6148`.
+- **Primary Blue**: Solid `#2563EB` background, `#FFFFFF` text. Hover/Pressed: `#1D4ED8`. Elevation Level 1. Full pill (`9999px`) or `16px` radius depending on form placement.
+- **Secondary Yellow**: Solid `#16A34A` background, `#FFFFFF` text. Hover/Pressed: `#D99A16`.
 - **Outline**: Transparent background, `1.5px` border in `#E2DDD6`, `#1A1613` text. Pressed state transitions to `#F7F4EF`.
-- **Ghost**: Transparent background, `#FF6B4A` or `#1A1613` text. Used for secondary tertiary actions like "Skip" or inline calendar shifts.
-- **Floating Action Button (FAB)**: Primary coral, Level 3 elevation, circular (`56px x 56px`), with standard icon centered.
+- **Ghost**: Transparent background, `#2563EB` or `#1A1613` text. Used for secondary tertiary actions like "Skip" or inline calendar shifts.
+- **Floating Action Button (FAB)**: Primary Blue, Level 3 elevation, circular (`56px x 56px`), with standard icon centered.
 
 ### Form Controls
 - **Inputs (Text, Email, Phone, Dropdown)**: `48px` height, background `#FCFBF9`, border `1px solid #E2DDD6`, radius `12px`.
-  - **Focused**: Border `2px solid #FF6B4A`, subtle glow `0 0 0 3px #FFEAE4`.
-  - **Error**: Border `1.5px solid #E53935`, background `#FDEBEB` at 20% opacity. Accompanying helper text in `#E53935`.
+  - **Focused**: Border `2px solid #2563EB`, subtle glow `0 0 0 3px #DBEAFE`.
+  - **Error**: Border `1.5px solid #DC2626`, background `#FEE2E2` at 20% opacity. Accompanying helper text in `#DC2626`.
 - **OTP Input**: Discrete square boxes (`48px x 56px`), radius `12px`, centered display typography.
 
 ### Status & Verification Badges
 - **Pill Geometry**: `24px` height, `8px` horizontal padding, radius `9999px`. Composed of a leading `12px` icon, followed by `11px` semibold tracking label.
 - **PetCare Trust Badges**:
-  - *Verified Provider*: Sage green container (`#E6F5EF`), forest text (`#1E6148`), shield check icon.
+  - *Verified Provider*: Sage green container (`#FEF3C7`), forest text (`#D99A16`), shield check icon.
   - *Identity / Background Checked*: Warm cream container (`#F7F4EF`), dark charcoal text (`#3A352F`), ID lock icon.
-  - *Top Rated*: Soft gold container (`#FEF6E7`), amber text (`#C78210`), star icon.
+  - *Top Rated*: Soft gold container (`#FEF3C7`), amber text (`#C78210`), star icon.
 - **Booking Flow Badges**:
-  - *Requested*: Amber background (`#FEF6E7`), text `#C78210`.
-  - *Confirmed / In-Progress*: Teal-tinted sage (`#E6F5EF`), text `#1E6148`.
+  - *Requested*: Amber background (`#FEF3C7`), text `#C78210`.
+  - *Confirmed / In-Progress*: Teal-tinted sage (`#FEF3C7`), text `#D99A16`.
   - *Completed*: Subtle gray (`#EFECE6`), text `#3A352F`.
-  - *Canceled*: Rose red (`#FDEBEB`), text `#E53935`.
+  - *Canceled*: Rose red (`#FEE2E2`), text `#DC2626`.
 
 ### Cards & Media Ratios
 - **Base Card**: Solid white (`#FFFFFF`) or Warm White (`#FCFBF9`), `1px solid #E2DDD6`, radius `16px`, Level 1 elevation.
@@ -245,7 +245,7 @@ The shape system adopts a pill-shaped orientation (`roundedness: 3`). Soft, circ
   - Document & Certification Previews: `3:4` portrait view with border stroke `#E2DDD6`.
 
 ### Map Visual Tokens
-- **Provider Pin**: Circular marker (`40px x 40px`) with `#FF6B4A` ring, white core holding provider avatar or service category glyph. Elevation Level 2.
-- **Service Radius**: `#FF6B4A` fill at 12% opacity with a dashed `1.5px` border in `#FF6B4A`.
-- **Route Tracking**: `#2D8A68` solid line with `4px` width and smooth linecaps.
+- **Provider Pin**: Circular marker (`40px x 40px`) with `#2563EB` ring, white core holding provider avatar or service category glyph. Elevation Level 2.
+- **Service Radius**: `#2563EB` fill at 12% opacity with a dashed `1.5px` border in `#2563EB`.
+- **Route Tracking**: `#16A34A` solid line with `4px` width and smooth linecaps.
 - **Travel Duration Pill**: Floating pill on map canvas, Level 3 elevation, `#1A1613` background with white text and coral distance icon.

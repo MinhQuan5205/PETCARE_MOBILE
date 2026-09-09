@@ -62,23 +62,23 @@ Avoid:
 
 | Token | Value | Usage |
 |---|---|---|
-| `primary.default` | `#FF6B4A` | Main CTA, brand accent, primary actions |
-| `primary.container` | `#FFEAE4` | Soft primary backgrounds |
-| `primary.active` | `#D94827` | Pressed / active primary state |
+| `primary.default` | `#2563EB` | Main CTA, brand accent, primary actions |
+| `primary.container` | `#DBEAFE` | Soft primary backgrounds |
+| `primary.active` | `#1D4ED8` | Pressed / active primary state |
 
 ### Secondary
 
 | Token | Value | Usage |
 |---|---|---|
-| `secondary.default` | `#2D8A68` | Trust, verified state, positive actions |
-| `secondary.container` | `#E6F5EF` | Verification / success containers |
-| `secondary.active` | `#1E6148` | Pressed / strong contrast green |
+| `secondary.default` | `#F5B82E` | Trust, verified state, positive actions |
+| `secondary.container` | `#FEF3C7` | Verification / success containers |
+| `secondary.active` | `#D99A16` | Pressed / strong contrast yellow |
 
 ### Accent
 
 | Token | Value | Usage |
 |---|---|---|
-| `accent.default` | `#F5A623` | Rating, progression, caution / pending |
+| `accent.default` | `#F5B82E` | Rating, progression, caution / pending |
 
 ### Neutral
 
@@ -97,10 +97,10 @@ Avoid:
 
 | Token | Value | Container |
 |---|---|---|
-| `semantic.success` | `#2D8A68` | `#E6F5EF` |
-| `semantic.warning` | `#F5A623` | `#FEF6E7` |
-| `semantic.error` | `#E53935` | `#FDEBEB` |
-| `semantic.info` | `#2575FC` | `#EBF3FF` |
+| `semantic.success` | `#16A34A` | `#DCFCE7` |
+| `semantic.warning` | `#F59E0B` | `#FEF3C7` |
+| `semantic.error`   | `#DC2626` | `#FEE2E2` |
+| `semantic.info`    | `#2563EB` | `#DBEAFE` |
 
 ### Additional values visible in the master flow design
 
@@ -109,14 +109,14 @@ Avoid:
 - `on-surface`: `#1f1b18`
 - `on-surface-variant`: `#59413c`
 - `primary`: `#ae3115`
-- `primary-container`: `#ff6b4a`
+- `primary-container`: `#dbeafe`
 - `secondary`: `#006c4d`
 - `secondary-container`: `#9af5cc`
 - `tertiary-container`: `#d38b00`
 - `error`: `#ba1a1a`
 
 Recommendation:
-- Use the explicitly documented `warm_pet_trust` product tokens (`#FF6B4A`, `#2D8A68`, etc.) as the main application palette.
+- Use the explicitly documented `warm_pet_trust` product tokens (`#2563EB`, `#F5B82E`, etc.) as the main application palette.
 - Keep the Material-style values as semantic/contrast references only unless the visual design clearly uses them.
 
 ---
@@ -258,7 +258,7 @@ Use:
 ### FAB
 - 56 × 56px
 - Circular
-- Primary coral
+- Primary Blue
 - Level 3 elevation
 
 ---
@@ -299,8 +299,8 @@ Base:
 ### Trust
 
 Verified Provider:
-- Container `#E6F5EF`
-- Text `#1E6148`
+- Container `#FEF3C7`
+- Text `#D99A16`
 - Shield/check icon
 
 Identity / Background Checked:
@@ -309,27 +309,27 @@ Identity / Background Checked:
 - ID/lock icon
 
 Top Rated:
-- Container `#FEF6E7`
+- Container `#FEF3C7`
 - Text `#C78210`
 - Star icon
 
 ### Booking
 
 Requested:
-- Background `#FEF6E7`
+- Background `#FEF3C7`
 - Text `#C78210`
 
 Confirmed / In Progress:
-- Background `#E6F5EF`
-- Text `#1E6148`
+- Background `#FEF3C7`
+- Text `#D99A16`
 
 Completed:
 - Background `#EFECE6`
 - Text `#3A352F`
 
 Canceled:
-- Background `#FDEBEB`
-- Text `#E53935`
+- Background `#FEE2E2`
+- Text `#DC2626`
 
 ---
 
@@ -363,7 +363,7 @@ Service radius:
 - Dashed 1.5px coral border
 
 Tracking route:
-- Sage `#2D8A68`
+- Yellow `#F5B82E`
 - 4px stroke
 
 Travel duration pill:

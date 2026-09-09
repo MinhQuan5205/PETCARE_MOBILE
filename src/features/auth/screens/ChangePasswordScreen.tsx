@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, KeyboardAvoidingView, ScrollView, Platform } from 'react-native';
 import { Button } from '../../../core/components/Button';
 import { Input } from '../../../core/components/Input';
 import { Screen } from '../../../core/components/Screen';
@@ -8,6 +8,7 @@ import { colors } from '../../../core/theme/colors';
 import { spacing } from '../../../core/theme/spacing';
 import { typography } from '../../../core/theme/typography';
 import { authApi } from '../api/authApi';
+import { Icon } from '../../../core/components/Icon';
 
 export default function ChangePasswordScreen() {
   const [oldPassword, setOldPassword] = useState('');
@@ -55,66 +56,104 @@ export default function ChangePasswordScreen() {
 
   return (
     <Screen style={styles.container}>
-      <View style={styles.header}>
-        <Text style={[typography.h1, { color: colors.text.primary }]}>Đổi mật khẩu</Text>
-        <Text style={[typography.bodyLg, { color: colors.text.secondary, marginTop: spacing[1] }]}>
-          Vui lòng nhập mật khẩu cũ và mật khẩu mới
-        </Text>
-      </View>
+      <KeyboardAvoidingView 
+        style={styles.keyboardView}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      >
+        <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+          
+          <TouchableOpacity 
+            style={styles.backButton}
+            onPress={() => router.back()}
+          >
+            <Icon name="arrow-left" size={24} color={colors.text.primary} />
+          </TouchableOpacity>
 
-      <View style={styles.form}>
-        {success && (
-          <View style={styles.successBox}>
-            <Text style={[typography.bodyMd, { color: colors.semantic.success }]}>
-              Mật khẩu đã được cập nhật thành công!
+          <View style={styles.header}>
+            <Text style={[typography.h1, { color: colors.text.primary }]}>Đổi mật khẩu</Text>
+            <Text style={[typography.bodyLg, { color: colors.text.secondary, marginTop: spacing[1] }]}>
+              Bảo mật tài khoản của bạn bằng mật khẩu mới
             </Text>
           </View>
-        )}
-        
-        <Input
-          label="Mật khẩu hiện tại"
-          placeholder="Nhập mật khẩu cũ"
-          value={oldPassword}
-          onChangeText={setOldPassword}
-          secureTextEntry
-        />
-        
-        <Input
-          label="Mật khẩu mới"
-          placeholder="Nhập mật khẩu mới (ít nhất 8 ký tự)"
-          value={newPassword}
-          onChangeText={setNewPassword}
-          secureTextEntry
-        />
 
-        <Input
-          label="Xác nhận mật khẩu mới"
-          placeholder="Nhập lại mật khẩu mới"
-          value={confirmPassword}
-          onChangeText={setConfirmPassword}
-          secureTextEntry
-          error={error}
-        />
+          <View style={styles.form}>
+            {success && (
+              <View style={styles.successBox}>
+                <Icon name="check-circle" size={16} color={colors.semantic.success} />
+                <Text style={styles.successText}>Mật khẩu đã được cập nhật thành công!</Text>
+              </View>
+            )}
+            
+            {error ? (
+              <View style={styles.errorBox}>
+                <Icon name="alert-circle" size={16} color={colors.semantic.error} />
+                <Text style={styles.errorText}>{error}</Text>
+              </View>
+            ) : null}
+            
+            <Input
+              label="Mật khẩu hiện tại"
+              placeholder="Nhập mật khẩu cũ"
+              value={oldPassword}
+              onChangeText={setOldPassword}
+              secureTextEntry
+              leftIcon="lock"
+            />
+            
+            <Input
+              label="Mật khẩu mới"
+              placeholder="Nhập mật khẩu mới (ít nhất 8 ký tự)"
+              value={newPassword}
+              onChangeText={setNewPassword}
+              secureTextEntry
+              leftIcon="shield"
+            />
 
-        <Button label="Lưu Thay Đổi"
-          onPress={handleChangePassword}
-          isLoading={loading}
-          style={{ marginTop: spacing[4] }}
-        />
-        
-        <Button label="Quay Lại"
-          onPress={() => router.back()}
-          variant="outline"
-          style={{ marginTop: spacing[2] }}
-        />
-      </View>
+            <Input
+              label="Xác nhận mật khẩu mới"
+              placeholder="Nhập lại mật khẩu mới"
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+              secureTextEntry
+              leftIcon="check-circle"
+            />
+
+            <Button label="Lưu Thay Đổi"
+              onPress={handleChangePassword}
+              isLoading={loading}
+              style={{ marginTop: spacing[4] }}
+            />
+            
+            <Button label="Quay Lại"
+              onPress={() => router.back()}
+              variant="outline"
+              style={{ marginTop: spacing[2] }}
+            />
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+  },
+  keyboardView: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
     padding: spacing[6],
+    paddingTop: spacing[12],
+  },
+  backButton: {
+    position: 'absolute',
+    top: spacing[2],
+    left: spacing[2],
+    zIndex: 10,
+    padding: spacing[2],
   },
   header: {
     marginTop: spacing[4],
@@ -124,9 +163,31 @@ const styles = StyleSheet.create({
     gap: spacing[4],
   },
   successBox: {
-    padding: spacing[4],
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: colors.semantic.successContainer,
+    padding: spacing[3],
     borderRadius: spacing[2],
     marginBottom: spacing[2],
+  },
+  successText: {
+    ...typography.bodySm,
+    color: colors.semantic.success,
+    marginLeft: spacing[2],
+    flex: 1,
+  },
+  errorBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.semantic.errorContainer,
+    padding: spacing[3],
+    borderRadius: spacing[2],
+    marginBottom: spacing[2],
+  },
+  errorText: {
+    ...typography.bodySm,
+    color: colors.semantic.error,
+    marginLeft: spacing[2],
+    flex: 1,
   },
 });
