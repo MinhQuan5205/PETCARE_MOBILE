@@ -58,7 +58,7 @@ export default function RegisterScreen() {
       const res = await authApi.register({ 
         email, 
         password, 
-        full_name: fullName 
+        fullName
       });
       
       if (res.success) {

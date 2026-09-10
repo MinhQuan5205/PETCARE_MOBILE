@@ -22,7 +22,7 @@ export interface AuthResponse {
 
 export interface RegisterRequest {
   email: string;
-  full_name: string;
+  fullName: string;
   password?: string;
 }
 

@@ -1,10 +1,9 @@
 import axios, { AxiosError, InternalAxiosRequestConfig, AxiosResponse } from 'axios';
 import * as SecureStore from 'expo-secure-store';
+import { env } from '../../core/config/env';
+import { ApiError } from '../../core/errors/ApiError';
 
-// Set base URL from env or fallback to local IP for simulator
-// Important: For Android emulator, use 10.0.2.2. For iOS simulator or web, localhost works,
-// but for a physical device you need your actual local IP.
-const BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.1.100:3000'; // Replace with actual default
+const BASE_URL = env.API_URL;
 
 export const apiClient = axios.create({
   baseURL: BASE_URL,
@@ -49,9 +48,9 @@ apiClient.interceptors.request.use(
 
 // Refresh Token Concurrency Lock
 let isRefreshing = false;
-let failedQueue: { resolve: (value?: unknown) => void; reject: (reason?: any) => void }[] = [];
+let failedQueue: { resolve: (value?: unknown) => void; reject: (reason?: unknown) => void }[] = [];
 
-const processQueue = (error: any, token: string | null = null) => {
+const processQueue = (error: unknown, token: string | null = null) => {
   failedQueue.forEach((prom) => {
     if (error) {
       prom.reject(error);
@@ -70,11 +69,14 @@ apiClient.interceptors.response.use(
 
     // Handle Network Errors
     if (!error.response) {
-      return Promise.reject({
-        success: false,
-        statusCode: 0,
-        message: 'Không thể kết nối đến máy chủ. Vui lòng kiểm tra mạng.',
-      });
+      return Promise.reject(
+        new ApiError(
+          'Không thể kết nối đến máy chủ. Vui lòng kiểm tra mạng.',
+          0,
+          error.message,
+          originalRequest?.url
+        )
+      );
     }
 
     const { status, data } = error.response;
@@ -101,7 +103,12 @@ apiClient.interceptors.response.use(
           withCredentials: true,
         });
 
-        const newAccessToken = refreshResponse.data.data.accessToken; // Assumes backend structure returns it here
+        const refreshData = refreshResponse.data as { data?: { accessToken?: string } };
+        const newAccessToken = refreshData.data?.accessToken;
+        
+        if (!newAccessToken) {
+          throw new Error('Refresh token response missing access token');
+        }
         await setAccessToken(newAccessToken);
 
         processQueue(null, newAccessToken);
@@ -112,25 +119,40 @@ apiClient.interceptors.response.use(
         processQueue(refreshError, null);
         await clearAuth();
         // Here we could dispatch an event to force logout in the UI, or simply let the rejected promise hit the hook which logs out.
-        return Promise.reject({
-          success: false,
-          statusCode: 401,
-          message: 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.',
-        });
+        return Promise.reject(
+          new ApiError(
+            'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.',
+            401,
+            refreshError instanceof Error ? refreshError.message : 'Unknown error',
+            '/auth/refresh'
+          )
+        );
       } finally {
         isRefreshing = false;
       }
     }
 
     // Normalize error format based on PetCare Contract
-    const normalizedError = {
-      success: false,
-      statusCode: status,
-      message: (data as any)?.message || error.message,
-      error: (data as any)?.error || null,
-      timestamp: (data as any)?.timestamp || new Date().toISOString(),
-      path: (data as any)?.path || originalRequest.url,
-    };
+    let errorMessage = error.message;
+    let errorDetail = null;
+    let timestamp = new Date().toISOString();
+    let path = originalRequest?.url || '';
+
+    if (typeof data === 'object' && data !== null) {
+      const record = data as Record<string, unknown>;
+      if (typeof record.message === 'string') errorMessage = record.message;
+      if (typeof record.error === 'string') errorDetail = record.error;
+      if (typeof record.timestamp === 'string') timestamp = record.timestamp;
+      if (typeof record.path === 'string') path = record.path;
+    }
+
+    const normalizedError = new ApiError(
+      errorMessage,
+      status,
+      errorDetail,
+      path,
+      timestamp
+    );
 
     return Promise.reject(normalizedError);
   }

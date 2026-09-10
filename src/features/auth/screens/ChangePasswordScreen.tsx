@@ -27,8 +27,8 @@ export default function ChangePasswordScreen() {
       return;
     }
     
-    if (newPassword.length < 8) {
-      setError('Mật khẩu mới phải có ít nhất 8 ký tự');
+    if (newPassword.length < 6) {
+      setError('Mật khẩu mới phải có ít nhất 6 ký tự');
       return;
     }
     

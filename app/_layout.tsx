@@ -66,23 +66,38 @@ function RootLayoutNav() {
 }
 
 function MainLayout() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, user } = useAuth();
   const segments = useSegments();
   const router = useRouter();
 
   useEffect(() => {
     if (isLoading) return;
 
-    const inAuthGroup = segments[0] === '(auth)';
+    const rootSegment = segments[0];
+    const isAuthGroup = rootSegment === '(auth)';
+    const isCustomerGroup = rootSegment === '(customer)';
+    const isProviderGroup = rootSegment === '(provider)';
     
-    if (!isAuthenticated && !inAuthGroup) {
-      // Redirect to login
-      router.replace('/(auth)/login');
-    } else if (isAuthenticated && inAuthGroup) {
-      // Redirect to app
-      router.replace('/(customer)/home');
+    if (!isAuthenticated) {
+      if (!isAuthGroup) {
+        // Redirect to login if trying to access protected routes
+        router.replace('/(auth)/login');
+      }
+    } else {
+      // Authenticated users
+      const role = user?.role;
+      
+      if (role === 'CUSTOMER') {
+        if (isAuthGroup || isProviderGroup || !rootSegment) {
+          router.replace('/(customer)' as any);
+        }
+      } else if (role === 'PROVIDER') {
+        if (isAuthGroup || isCustomerGroup || !rootSegment) {
+          router.replace('/(provider)' as any);
+        }
+      }
     }
-  }, [isAuthenticated, isLoading, segments, router]);
+  }, [isAuthenticated, isLoading, segments, router, user?.role]);
 
   return (
     <Stack>
