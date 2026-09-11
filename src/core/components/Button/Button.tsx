@@ -48,23 +48,24 @@ export const Button = forwardRef<any, ButtonProps>(
         case 'primary':
           variantStyles = {
             backgroundColor: disabled ? theme.colors.surface.subdued : theme.colors.primary.default,
-            borderColor: 'transparent',
-            borderWidth: 0,
+            borderColor: theme.colors.text.primary,
+            borderWidth: 2,
             ...(!disabled && theme.shadows.sm),
           };
           break;
         case 'secondary':
           variantStyles = {
             backgroundColor: disabled ? theme.colors.surface.subdued : theme.colors.secondary.default,
-            borderColor: 'transparent',
-            borderWidth: 0,
+            borderColor: theme.colors.text.primary,
+            borderWidth: 2,
+            ...(!disabled && theme.shadows.sm),
           };
           break;
         case 'outline':
           variantStyles = {
             backgroundColor: 'transparent',
-            borderColor: disabled ? theme.colors.border.subdued : theme.colors.border.default,
-            borderWidth: 1.5,
+            borderColor: disabled ? theme.colors.border.subdued : theme.colors.text.primary,
+            borderWidth: 2,
           };
           break;
         case 'danger':
@@ -151,7 +152,7 @@ Button.displayName = 'Button';
 const styles = StyleSheet.create({
   container: {
     height: theme.dimensions.buttonHeight,
-    borderRadius: theme.radius.full,
+    borderRadius: theme.radius.md,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',

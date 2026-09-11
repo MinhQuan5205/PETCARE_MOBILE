@@ -4,10 +4,23 @@ export interface UserProfile {
   id: string;
   email: string;
   full_name: string;
+  phone?: string;
   role: 'CUSTOMER' | 'PROVIDER' | 'ADMIN';
   status: 'PENDING_VERIFICATION' | 'ACTIVE' | 'SUSPENDED' | 'BANNED' | 'DELETED';
   avatar_url?: string;
   created_at: string;
+}
+
+export interface BackendUserResponse {
+  id: string;
+  fullName: string | null;
+  email: string;
+  phone: string | null;
+  avatarUrl: string | null;
+  role: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface AuthResponse {

@@ -9,6 +9,13 @@ export default function CustomerLayout() {
         tabBarActiveTintColor: colors.primary.default,
         tabBarInactiveTintColor: colors.text.muted,
         headerShown: false,
+        tabBarStyle: {
+          borderTopWidth: 2,
+          borderTopColor: colors.text.primary,
+          elevation: 0,
+          shadowOpacity: 0,
+          backgroundColor: colors.surface.default,
+        },
       }}
     >
       <Tabs.Screen
@@ -49,6 +56,13 @@ export default function CustomerLayout() {
       {/* Hidden nested routes */}
       <Tabs.Screen name="index" options={{ href: null }} />
       <Tabs.Screen name="change-password" options={{ href: null }} />
+      <Tabs.Screen name="profile/edit" options={{ href: null }} />
+      <Tabs.Screen name="pets/index" options={{ href: null }} />
+      <Tabs.Screen name="pets/add" options={{ href: null }} />
+      <Tabs.Screen name="pets/[id]/edit" options={{ href: null }} />
+      <Tabs.Screen name="addresses/index" options={{ href: null }} />
+      <Tabs.Screen name="addresses/add" options={{ href: null }} />
+      <Tabs.Screen name="addresses/[id]/edit" options={{ href: null }} />
     </Tabs>
   );
 }

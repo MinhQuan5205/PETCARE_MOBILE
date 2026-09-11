@@ -1,3 +1,5 @@
+export type AddressType = 'HOME' | 'WORK' | 'OTHER';
+
 export interface Address {
   id: string;
   label?: string;

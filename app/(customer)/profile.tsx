@@ -1,18 +1,12 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { Screen } from '../../src/core/components/Screen';
+import { Stack } from 'expo-router';
+import { ProfileScreen } from '@/features/profile/screens/ProfileScreen';
 
-export default function ProfileTab() {
+export default function ProfileRoute() {
   return (
-    <Screen>
-      <View style={styles.container}>
-        <Text style={styles.text}>Cá nhân (Placeholder)</Text>
-      </View>
-    </Screen>
+    <>
+      <Stack.Screen options={{ title: 'My Profile' }} />
+      <ProfileScreen />
+    </>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  text: { fontSize: 16 },
-});

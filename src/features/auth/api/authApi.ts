@@ -11,6 +11,7 @@ import {
   ChangePasswordRequest,
   GoogleLoginRequest,
   ForgotPasswordRequest,
+  BackendUserResponse,
 } from '../types/auth.types';
 
 export const authApi = {
@@ -61,6 +62,27 @@ export const authApi = {
 
   googleLogin: async (data: GoogleLoginRequest): Promise<AuthResponse> => {
     const response = await apiClient.post('/auth/google/id-token', data);
+    return response.data;
+  },
+
+  updateProfile: async (data: { fullName?: string; phone?: string }): Promise<ApiResponse<BackendUserResponse>> => {
+    const response = await apiClient.patch('/users/me', data);
+    return response.data;
+  },
+
+  updateAvatar: async (avatarUri: string, mimeType: string, fileName: string): Promise<ApiResponse<BackendUserResponse>> => {
+    const formData = new FormData();
+    formData.append('file', {
+      uri: avatarUri,
+      type: mimeType || 'image/jpeg',
+      name: fileName || `avatar-${Date.now()}.jpg`,
+    } as any);
+
+    const response = await apiClient.patch('/users/me/avatar', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
     return response.data;
   },
 };

@@ -27,6 +27,8 @@ export function Avatar({
     width: dimension,
     height: dimension,
     borderRadius,
+    borderWidth: 2,
+    borderColor: theme.colors.text.primary,
   };
 
   if (source) {

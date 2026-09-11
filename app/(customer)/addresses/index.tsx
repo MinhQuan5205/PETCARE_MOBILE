@@ -1,6 +1,12 @@
 import React from 'react';
-import AddressListScreen from '../../../src/features/addresses/screens/AddressListScreen';
+import { Stack } from 'expo-router';
+import { AddressListScreen } from '@/features/addresses/screens/AddressListScreen';
 
-export default function AddressesIndex() {
-  return <AddressListScreen />;
+export default function AddressesRoute() {
+  return (
+    <>
+      <Stack.Screen options={{ title: 'My Addresses' }} />
+      <AddressListScreen />
+    </>
+  );
 }

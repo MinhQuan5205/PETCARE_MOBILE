@@ -32,23 +32,23 @@ export function Card({
       case 'elevated':
         return {
           backgroundColor: theme.colors.surface.default,
-          borderColor: 'transparent',
-          borderWidth: 0,
+          borderColor: theme.colors.text.primary,
+          borderWidth: 2,
           ...theme.shadows.md,
         };
       case 'outlined':
         return {
           backgroundColor: 'transparent',
-          borderColor: theme.colors.border.default,
-          borderWidth: 1,
+          borderColor: theme.colors.text.primary,
+          borderWidth: 2,
           ...theme.shadows.none,
         };
       case 'default':
       default:
         return {
           backgroundColor: theme.colors.surface.default,
-          borderColor: theme.colors.border.default,
-          borderWidth: 1,
+          borderColor: theme.colors.text.primary,
+          borderWidth: 2,
           ...theme.shadows.sm,
         };
     }

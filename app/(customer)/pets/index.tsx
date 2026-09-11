@@ -1,6 +1,12 @@
 import React from 'react';
-import PetListScreen from '../../../src/features/pets/screens/PetListScreen';
+import { Stack } from 'expo-router';
+import { PetListScreen } from '@/features/pets/screens/PetListScreen';
 
-export default function PetsIndex() {
-  return <PetListScreen />;
+export default function PetsRoute() {
+  return (
+    <>
+      <Stack.Screen options={{ title: 'My Pets' }} />
+      <PetListScreen />
+    </>
+  );
 }

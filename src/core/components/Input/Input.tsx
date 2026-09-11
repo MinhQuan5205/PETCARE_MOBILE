@@ -67,7 +67,7 @@ export const Input = forwardRef<TextInput, InputProps>(
       if (hasError) return theme.colors.semantic.error;
       if (isFocused) return theme.colors.primary.default;
       if (isDisabled) return theme.colors.border.subdued;
-      return theme.colors.border.default;
+      return theme.colors.text.primary;
     };
 
     const getBackgroundColor = () => {
@@ -91,7 +91,7 @@ export const Input = forwardRef<TextInput, InputProps>(
             {
               borderColor: getBorderColor(),
               backgroundColor: getBackgroundColor(),
-              borderWidth: isFocused ? 2 : 1,
+              borderWidth: 2,
             },
             style,
           ]}

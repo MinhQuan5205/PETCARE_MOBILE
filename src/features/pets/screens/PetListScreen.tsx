@@ -1,103 +1,128 @@
-import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Text, FlatList, ActivityIndicator } from 'react-native';
-import { Screen } from '../../../core/components/Screen';
-import { Button } from '../../../core/components/Button';
-import { Card } from '../../../core/components/Card';
-import { EmptyState } from '../../../core/components/EmptyState';
-import { ErrorState } from '../../../core/components/ErrorState';
+import React, { useState, useCallback } from 'react';
+import { View, StyleSheet, FlatList, Alert } from 'react-native';
+import { useRouter, useFocusEffect } from 'expo-router';
+import { Screen } from '@/core/components/Screen';
+import { Button } from '@/core/components/Button';
+import { EmptyState } from '@/core/components/EmptyState';
+import { Loading } from '@/core/components/Loading';
+import { Toast } from '@/core/components/Toast';
+import { StatusVariant } from '@/core/components/StatusBadge';
+import { theme } from '@/core/theme';
 import { petApi } from '../api/petApi';
 import { Pet } from '../types/pet.types';
-import { typography } from '../../../core/theme/typography';
-import { colors } from '../../../core/theme/colors';
-import { spacing } from '../../../core/theme/spacing';
+import { PetCard } from '../components/PetCard';
 
-export default function PetListScreen() {
+export function PetListScreen() {
   const [pets, setPets] = useState<Pet[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
+  const [toast, setToast] = useState({ visible: false, message: "", variant: "success" as StatusVariant });
+  const showToast = (message: string, variant: StatusVariant = "success") => setToast({ visible: true, message, variant });
 
   const fetchPets = async () => {
-    setLoading(true);
-    setError('');
     try {
-      const res = await petApi.getPets();
-      if (res.success) {
-        setPets(res.data);
-      } else {
-        setError(res.message || 'Không thể tải danh sách thú cưng');
+      const response = await petApi.getPets();
+      if (response.success) {
+        setPets(response.data);
       }
-    } catch (err: any) {
-      setError(err?.message || 'Đã có lỗi xảy ra. Vui lòng thử lại.');
+    } catch (error: any) {
+      showToast('Failed to load pets', 'error');
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchPets();
-  }, []);
-
-  const renderItem = ({ item }: { item: Pet }) => (
-    <Card style={styles.card}>
-      <Text style={[typography.h3, { color: colors.text.primary }]}>{item.name}</Text>
-      <Text style={[typography.bodyMd, { color: colors.text.secondary }]}>{item.species} {item.breed ? `- ${item.breed}` : ''}</Text>
-    </Card>
+  useFocusEffect(
+    useCallback(() => {
+      setIsLoading(true);
+      fetchPets();
+    }, [])
   );
 
-  return (
-    <Screen style={styles.container} >
-      <View style={styles.header}>
-        <Text style={[typography.h1, { color: colors.text.primary }]}>Thú cưng của tôi</Text>
-      </View>
-      
-      {loading ? (
-        <View style={styles.centered}>
-          <ActivityIndicator size="large" color={colors.primary.default} />
-        </View>
-      ) : error ? (
-        <ErrorState
-          title="Lỗi tải dữ liệu"
-          description={error}
-          onRetry={fetchPets}
-        />
-      ) : (
-        <FlatList
-          data={pets}
-          keyExtractor={(item) => item.id}
-          renderItem={renderItem}
-          contentContainerStyle={styles.list}
-          ListEmptyComponent={
-            <EmptyState
-              title="Chưa có thú cưng"
-              description="Hãy thêm thú cưng của bạn vào PetCare để bắt đầu sử dụng dịch vụ."
-              actionLabel="Thêm thú cưng"
-              onAction={() => {}} // Navigation to create pet
-            />
+  const handleDelete = (petId: string, petName: string) => {
+    Alert.alert(
+      'Delete Pet',
+      `Are you sure you want to delete ${petName}? This action cannot be undone.`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { 
+          text: 'Delete', 
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await petApi.deletePet(petId);
+              showToast('Pet deleted successfully', 'success');
+              fetchPets();
+            } catch (error: any) {
+              if (error.statusCode === 403) {
+                showToast('You do not have permission to delete this pet', 'error');
+              } else {
+                showToast(error.message || 'Failed to delete pet', 'error');
+              }
+            }
           }
-        />
+        }
+      ]
+    );
+  };
+
+  if (isLoading && pets.length === 0) {
+    return (
+      <Screen backgroundColor={theme.colors.background.default}>
+        <Loading fullScreen />
+        <Toast visible={toast.visible} message={toast.message} variant={toast.variant} onHide={() => setToast(prev => ({ ...prev, visible: false }))} />
+    </Screen>
+    );
+  }
+
+  return (
+    <Screen backgroundColor={theme.colors.background.default}>
+      <FlatList
+        data={pets}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={styles.listContent}
+        renderItem={({ item }) => (
+          <PetCard 
+            pet={item} 
+            onPress={() => router.push(`/(customer)/pets/${item.id}/edit` as any)}
+            onDelete={() => handleDelete(item.id, item.name)}
+          />
+        )}
+        ListEmptyComponent={
+          <EmptyState
+            title="No Pets Yet"
+            description="Add your first pet to keep track of their care and records."
+            icon="gitlab" // close to pet icon in lucide
+            actionLabel="Add Pet"
+            onAction={() => router.push('/(customer)/pets/add')}
+
+          />
+        }
+      />
+      
+      {pets.length > 0 && (
+        <View style={styles.footer}>
+          <Button 
+            label="Add Another Pet" 
+            variant="primary" 
+            onPress={() => router.push('/(customer)/pets/add')}
+            isFullWidth
+          />
+        </View>
       )}
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    padding: spacing[6],
-  },
-  header: {
-    marginTop: spacing[8],
-    marginBottom: spacing[6],
-  },
-  centered: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  list: {
+  listContent: {
+    paddingVertical: theme.spacing[4],
     flexGrow: 1,
-    gap: spacing[4],
   },
-  card: {
-    padding: spacing[4],
-  },
+  footer: {
+    paddingTop: theme.spacing[4],
+    paddingBottom: theme.spacing[6],
+    borderTopWidth: 1,
+    borderTopColor: theme.colors.border.subdued,
+  }
 });
